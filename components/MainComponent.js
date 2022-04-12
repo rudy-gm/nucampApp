@@ -3,6 +3,7 @@ import { View, Platform, StyleSheet, Text, ScrollView, Image } from "react-nativ
 import { createStackNavigator } from "react-navigation-stack";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 import { createAppContainer } from "react-navigation";
+import { Constants } from "expo-constants";
 import CampsiteInfo from "./CampsiteInfoComponent";
 import { createDrawerNavigator, DrawerItems } from "react-navigation-drawer";
 import { Icon } from "react-native-elements";

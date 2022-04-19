@@ -27,6 +27,7 @@ import Directory from "./DirectoryComponent";
 import Contact from "./ContactComponent";
 import About from "./AboutComponent";
 import Reservation from "./ReservationComponent";
+import Favorites from './FavoritesComponent';
 
 const mapDispatchToProps ={
   fetchCampsites,
@@ -166,6 +167,32 @@ const ReservationNavigator = createStackNavigator(
   }
 );
 
+const FavoritesNavigator = createStackNavigator(
+  {
+    Favorites: { screen: Favorites},
+  },
+  {
+    defaultNavigationOptions: ({ navigation }) => ({
+      headerStyle: {
+        backgroundColor: "#5637DD",
+      },
+      headerTintColor: "#fff",
+      headerTitleStyle: {
+        color: "#fff",
+      },
+      headerLeft: (
+        <Icon
+          name="heart"
+          type="font-awesome"
+          iconStyle={styles.stackIcon}
+          onPress={() => navigation.toggleDrawer()}
+        ></Icon>
+      ),
+    }),
+  }
+);
+
+
 const CustomDrawerContentComponent = (props) => (
   <ScrollView>
     <SafeAreaView
@@ -224,6 +251,20 @@ const MainNavigator = createDrawerNavigator(
         drawerIcon: ({ tintColor }) => (
           <Icon
             name="tree"
+            type="font-awesome"
+            size={24}
+            color={tintColor}
+          ></Icon>
+        ),
+      },
+    },
+    Favorites: {
+      screen: FavoritesNavigator,
+      navigationOptions: {
+        drawerLabel: 'My Favories',
+        drawerIcon: ({ tintColor }) => (
+          <Icon
+            name="heart"
             type="font-awesome"
             size={24}
             color={tintColor}

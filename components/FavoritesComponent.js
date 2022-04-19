@@ -7,6 +7,7 @@ import { baseUrl } from "../shared/baseUrl";
 import { SwipeRow } from "react-native-swipe-list-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { deleteFavorite } from "../redux/ActionCreators";
+import * as Animatable from "react-native-animatable";
 
 const mapStateToProps = (state) => {
   return {
@@ -31,30 +32,33 @@ class Favorites extends Component {
       return (
         <SwipeRow rightOpenValue={-100} style={styles.swipeRow}>
           <View style={styles.deleteView}>
-              <TouchableOpacity
-                style={styles.deleteTouchable}
-                onPress={()=> Alert.alert(
-                    'Delete Favorite?',
-                    'Are you sure you wish to delete the favorite campsite ' +
-                    item.name + '?',
-                    [
-                        { 
-                            text: 'Cancel',
-                            onPress : () => console.log(item.name + 'Not Deleted'),
-                            style: 'cancel'
-                        },
-                        {
-                            text: 'Ok',
-                            onPress: () => this.props.deleteFavorite(item.id)
-                        },
-                        {
-                            cancelable: false
-                        }
-                    ]
-                )}
-                >
-                    <Text style={styles.deleteText}>Delete</Text>
-                </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.deleteTouchable}
+              onPress={() =>
+                Alert.alert(
+                  "Delete Favorite?",
+                  "Are you sure you wish to delete the favorite campsite " +
+                    item.name +
+                    "?",
+                  [
+                    {
+                      text: "Cancel",
+                      onPress: () => console.log(item.name + "Not Deleted"),
+                      style: "cancel",
+                    },
+                    {
+                      text: "Ok",
+                      onPress: () => this.props.deleteFavorite(item.id),
+                    },
+                    {
+                      cancelable: false,
+                    },
+                  ]
+                )
+              }
+            >
+              <Text style={styles.deleteText}>Delete</Text>
+            </TouchableOpacity>
           </View>
           <View>
             <ListItem
@@ -80,37 +84,38 @@ class Favorites extends Component {
     }
 
     return (
-      <FlatList
-        data={this.props.campsites.campsites.filter((campsite) =>
-          this.props.favorites.includes(campsite.id) 
-        )}
-        renderItem={renderFavoriteItem}
-        keyExtractor={(item) => item.id.toString()}
-      />
+      <Animatable.View animation="fadeInRightBig" duration={2000}>
+        <FlatList
+          data={this.props.campsites.campsites.filter((campsite) =>
+            this.props.favorites.includes(campsite.id)
+          )}
+          renderItem={renderFavoriteItem}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      </Animatable.View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-
-    deleteView:{
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        alignItems:'center',
-        flex: 1
-    },
-    deleteTouchable:{
-        backgroundColor:'red',
-        height: '100%',
-        justifyContent: 'center',
-    },
-    deleteText:{
-        color: 'white',
-        fontWeight: '700',
-        textAlign: 'center',
-        fontSize:16, 
-        width:100
-    }
-})
+  deleteView: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    flex: 1,
+  },
+  deleteTouchable: {
+    backgroundColor: "red",
+    height: "100%",
+    justifyContent: "center",
+  },
+  deleteText: {
+    color: "white",
+    fontWeight: "700",
+    textAlign: "center",
+    fontSize: 16,
+    width: 100,
+  },
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Favorites);

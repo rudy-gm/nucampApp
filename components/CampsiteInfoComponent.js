@@ -36,6 +36,8 @@ function RenderCampsite(props) {
 
   const view = React.createRef();
 
+  const recognizeComment = ({dx}) =>(dx > 200) ? true: false;
+
 
   const recognizeDrag =({dx}) =>(dx < -200) ? true: false;
 
@@ -68,6 +70,10 @@ function RenderCampsite(props) {
             ],
             {cancelable: false}
           );
+        }
+        else if(recognizeComment(gestureState)){
+            props.onShowModal()
+
         }
 
         return true;

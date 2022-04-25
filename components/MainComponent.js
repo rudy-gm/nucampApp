@@ -10,7 +10,7 @@ import {
 import { createStackNavigator } from "react-navigation-stack";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 import { createAppContainer } from "react-navigation";
-import  Constants  from "expo-constants";
+import Constants from "expo-constants";
 import CampsiteInfo from "./CampsiteInfoComponent";
 import { createDrawerNavigator, DrawerItems } from "react-navigation-drawer";
 import { Icon } from "react-native-elements";
@@ -27,13 +27,14 @@ import Directory from "./DirectoryComponent";
 import Contact from "./ContactComponent";
 import About from "./AboutComponent";
 import Reservation from "./ReservationComponent";
-import Favorites from './FavoritesComponent';
+import Favorites from "./FavoritesComponent";
+import Login from "./LoginComponent";
 
-const mapDispatchToProps ={
+const mapDispatchToProps = {
   fetchCampsites,
   fetchComments,
   fetchPartners,
-  fetchPromotions
+  fetchPromotions,
 };
 
 const DirectoryNavigator = createStackNavigator(
@@ -144,7 +145,7 @@ const AboutNavigator = createStackNavigator(
 
 const ReservationNavigator = createStackNavigator(
   {
-    Reservation: { screen: Reservation},
+    Reservation: { screen: Reservation },
   },
   {
     defaultNavigationOptions: ({ navigation }) => ({
@@ -169,7 +170,7 @@ const ReservationNavigator = createStackNavigator(
 
 const FavoritesNavigator = createStackNavigator(
   {
-    Favorites: { screen: Favorites},
+    Favorites: { screen: Favorites },
   },
   {
     defaultNavigationOptions: ({ navigation }) => ({
@@ -192,6 +193,30 @@ const FavoritesNavigator = createStackNavigator(
   }
 );
 
+const LoginNavigator = createStackNavigator(
+  {
+    Login: { screen: Login },
+  },
+  {
+    defaultNavigationOptions: ({ navigation }) => ({
+      headerStyle: {
+        backgroundColor: "#5637DD",
+      },
+      headerTintColor: "#fff",
+      headerTitleStyle: {
+        color: "#fff",
+      },
+      headerLeft: (
+        <Icon
+          name="sign-in"
+          type="font-awesome"
+          iconStyle={styles.stackIcon}
+          onPress={() => navigation.toggleDrawer()}
+        ></Icon>
+      ),
+    }),
+  }
+);
 
 const CustomDrawerContentComponent = (props) => (
   <ScrollView>
@@ -218,6 +243,20 @@ const CustomDrawerContentComponent = (props) => (
 
 const MainNavigator = createDrawerNavigator(
   {
+    Login: {
+      screen: LoginNavigator,
+      navigationOptions: {
+        drawerIcon: ({ tintColor }) => (
+          <Icon
+            name="sign-in"
+            type="font-awesome"
+            size={24}
+            color={tintColor}
+          ></Icon>
+        ),
+      },
+    },
+
     Home: {
       screen: HomeNavigator,
       navigationOptions: {
@@ -247,7 +286,7 @@ const MainNavigator = createDrawerNavigator(
     Reservation: {
       screen: ReservationNavigator,
       navigationOptions: {
-        drawerLabel: 'Reserve Campsite',
+        drawerLabel: "Reserve Campsite",
         drawerIcon: ({ tintColor }) => (
           <Icon
             name="tree"
@@ -261,7 +300,7 @@ const MainNavigator = createDrawerNavigator(
     Favorites: {
       screen: FavoritesNavigator,
       navigationOptions: {
-        drawerLabel: 'My Favories',
+        drawerLabel: "My Favories",
         drawerIcon: ({ tintColor }) => (
           <Icon
             name="heart"
@@ -302,6 +341,7 @@ const MainNavigator = createDrawerNavigator(
     },
   },
   {
+    initialRouteName: 'Home',
     drawerBackgroundColor: "#CEC8FF",
     contentComponent: CustomDrawerContentComponent,
   }
@@ -310,8 +350,7 @@ const MainNavigator = createDrawerNavigator(
 const AppNavigator = createAppContainer(MainNavigator);
 
 class Main extends Component {
-
-  componentDidMount(){
+  componentDidMount() {
     this.props.fetchCampsites();
     this.props.fetchComments();
     this.props.fetchPromotions();
@@ -323,7 +362,7 @@ class Main extends Component {
       <View
         style={{
           flex: 1,
-           paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight
+          paddingTop: Platform.OS === "ios" ? 0 : Constants.statusBarHeight,
         }}
       >
         <AppNavigator />
@@ -361,4 +400,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connect (null, mapDispatchToProps)(Main);
+export default connect(null, mapDispatchToProps)(Main);

@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Animatable from "react-native-animatable";
+import * as Notifications from "expo-notifications";
 
 class Reservation extends Component {
   constructor(props) {
@@ -39,6 +40,35 @@ class Reservation extends Component {
       date: new Date(),
       showCalendar: false,
     });
+  }
+
+  async presentLocalNotification(date) {
+    function sendNotification() {
+      Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowAlert: true,
+        }),
+      });
+
+      Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Your campsite reservation search",
+          body: `Search for ${date} requested`,
+        },
+
+        trigger: null
+      });
+    }
+
+    let permissions = await Notifications.getPermissionsAsync();
+
+    if(!permissions.granted){
+
+      permissions = await Notifications.requestPermissionsAsync();
+    }
+    if(permissions.granted){
+      sendNotification();
+    }
   }
 
   render() {
@@ -99,21 +129,30 @@ class Reservation extends Component {
             <Button
               onPress={() => {
                 this.handleReservation();
-                Alert.alert("Begin Search?",
-                            'Number of Campers: ' + this.state.campers + '\n' +
-                            'Hike In?: ' + `${this.state.hikeIn? 'Yes' : 'No'}` + '\n' +
-                            'Date: ' + `${this.state.date.toLocaleDateString("en-US")}`,
-                            [
-                              {
-                                text: 'Cancel',
-                                style: 'cancel',
-                                onPress: ()=> this.resetForm()
-                              },
-                              {
-                                text: 'Ok',
-                                onPress: () => this.resetForm()
-                              }
-                            ]
+                Alert.alert(
+                  "Begin Search?",
+                  "Number of Campers: " +
+                    this.state.campers +
+                    "\n" +
+                    "Hike In?: " +
+                    `${this.state.hikeIn ? "Yes" : "No"}` +
+                    "\n" +
+                    "Date: " +
+                    `${this.state.date.toLocaleDateString("en-US")}`,
+                  [
+                    {
+                      text: "Cancel",
+                      style: "cancel",
+                      onPress: () => this.resetForm(),
+                    },
+                    {
+                      text: "Ok",
+                      onPress: () =>{
+                        this.presentLocalNotification(this.state.date.toLocaleDateString('en-US'));
+                        this.resetForm();
+                      }
+                    },
+                  ]
                 );
               }}
               title="Search"
@@ -121,7 +160,6 @@ class Reservation extends Component {
               accessibilityLabel="Tap me to search for available campsites to reserve "
             ></Button>
           </View>
-
         </Animatable.View>
       </ScrollView>
     );

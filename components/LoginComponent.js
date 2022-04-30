@@ -3,9 +3,12 @@ import { View, StyleSheet, ScrollView, Image } from "react-native";
 import { Input, CheckBox, Button, Icon } from "react-native-elements";
 import * as SecureStore from "expo-secure-store";
 import * as ImagePikcer from "expo-image-picker";
+import * as ImageManipulator from 'expo-image-manipulator';
+import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from "expo-permissions";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 import { baseUrl } from "../shared/baseUrl";
+import { SaveFormat } from "expo-image-manipulator";
 
 class LoginTab extends Component {
   constructor(props) {
@@ -181,16 +184,47 @@ class RegisterTab extends Component {
     ) {
       const capturedImage = await ImagePikcer.launchCameraAsync({
         allowsEditing: true,
-        aspect: [1, 1],
+        aspect: [1, 1]
       });
 
       if (!capturedImage.cancelled) {
         console.log(capturedImage);
-        this.setState({ imageUrl: capturedImage.uri });
+        this.processImg(capturedImage.uri);
       }
     }
     
   };
+
+  getImageFromGallery = async () =>{
+
+    const cameraRollPermissions = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+    if(cameraRollPermissions.status === 'granted'){
+
+      const capturedImage = await ImagePikcer.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [1,1]
+      })
+
+      if(!capturedImage.cancelled){
+        console.log(capturedImage)
+        this.processImg(capturedImage.uri)
+      }
+    }
+  }
+
+  processImg = async (imgUri) =>{
+     
+    const processedImage = await ImageManipulator.manipulateAsync(imgUri,[{resize: {width: 400}}],{format: SaveFormat.PNG})
+
+    console.log(processedImage, 'hello');
+
+    this.setState({
+      imageUrl: processedImage.uri
+    })
+
+    MediaLibrary.saveToLibraryAsync(processedImage.uri)
+  }
 
   render() {
     return (
@@ -203,6 +237,7 @@ class RegisterTab extends Component {
               style={styles.image}
             ></Image>
             <Button title="Camera" onPress={this.getImageFromCamera}></Button>
+            <Button title="Gallery" onPress={this.getImageFromGallery}></Button>
           </View>
           <Input
             placeholder="Username"
